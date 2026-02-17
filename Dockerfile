@@ -6,13 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y --no-install-recommends \
     xfce4 \
     tigervnc-standalone-server \
+    tigervnc-tools \
     novnc \
     websockify \
     xterm \
     dbus-x11 \
-    x11-utils \
-    x11-xserver-utils \
-    x11-apps \
     firefox-esr \
     curl \
     wget \
