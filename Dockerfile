@@ -31,7 +31,10 @@ EXPOSE 6080
 
 # تشغيل VNC + noVNC
 CMD bash -c "\
-vncserver -localhost no -SecurityTypes None -geometry 1280x720 && \
+mkdir -p ~/.vnc && \
+echo '123456' | vncpasswd -f > ~/.vnc/passwd && \
+chmod 600 ~/.vnc/passwd && \
+vncserver -localhost no -geometry 1280x720 && \
 openssl req -new -subj '/C=US' -x509 -days 365 -nodes -out self.pem -keyout self.pem && \
 websockify --web=/usr/share/novnc/ --cert=self.pem 6080 localhost:5901 \
 "
