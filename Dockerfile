@@ -2,37 +2,26 @@ FROM --platform=linux/amd64 debian:12-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# تحديث وتثبيت الحزم الأساسية فقط
 RUN apt update && apt install -y --no-install-recommends \
     xfce4 \
-    tigervnc-standalone-server \
-    tigervnc-tools \
-    novnc \
-    websockify \
-    xterm \
+    xfce4-terminal \
+    xrdp \
     dbus-x11 \
-    firefox-esr \
+    sudo \
     curl \
     wget \
     ca-certificates \
-    openssl \
-    sudo \
+    firefox-esr \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
-# إنشاء Xauthority
-RUN touch /root/.Xauthority
+RUN echo "startxfce4" > /etc/skel/.xsession && \
+    echo "startxfce4" > /root/.xsession
 
-# فتح البورتات
-EXPOSE 5901
-EXPOSE 6080
+RUN useradd -m -s /bin/bash user && \
+    echo "user:1234" | chpasswd && \
+    adduser user sudo
 
-# تشغيل VNC + noVNC
-CMD bash -c "\
-mkdir -p ~/.vnc && \
-echo '123456' | vncpasswd -f > ~/.vnc/passwd && \
-chmod 600 ~/.vnc/passwd && \
-vncserver -localhost no -geometry 1280x720 && \
-openssl req -new -subj '/C=US' -x509 -days 365 -nodes -out self.pem -keyout self.pem && \
-websockify --web=/usr/share/novnc/ --cert=self.pem 6080 localhost:5901 \
-"
+EXPOSE 3389
+
+CMD ["/usr/sbin/xrdp", "--nodaemon"]
